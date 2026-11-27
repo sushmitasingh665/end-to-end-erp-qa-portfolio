@@ -1,89 +1,197 @@
-# Current Delivery Order Workflows — Test Scenarios and Test Cases
+# Current Delivery Order Workflows
 
-**Execution status:** All cases below are newly documented and remain **Not Run**. Use authorized test environments and synthetic data only. Record actual results and evidence only after execution.
+**Execution status:** All documented cases are **Not Run** until they are executed in an authorized test environment. Use synthetic data only. Record actual results and evidence only after execution.
 
-## Preconditions and test data
-- Salesforce customer configured as a normal sales customer (prepayment or credit as required).
-- A separate transfer customer for location-to-location movements.
-- Bulk and package products configured in Navision.
-- Active source/destination locations, SKU and available inventory.
-- Applicable Navision Pricing Engine setup and customer **Invoice Based On** setting (Standard or Ambient).
-- WindDMS company/database, haulier, vehicle, shift and compartments configured for bulk delivery.
-- TMSLite location active and accessible to the tester.
-- Required integrations through the connected iPaaS / Middleware layer available.
-- Where a template correction is in scope, access to the approved SmartComm support process.
+## Scope
 
-## A. Current Delivery Bulk — normal sales customer
+1. Normal sales customer
+   - Current Delivery Bulk
+   - Current Delivery Package
+2. Normal customer using a consignment location
+   - Current Delivery Bulk
+3. Transfer customer
+   - Current Delivery Bulk only
 
-| ID | Scenario | Key steps | Expected result |
-|---|---|---|---|
-| CDB-001 | Create and submit a Current Delivery Bulk order | In SFDC, open the normal customer; create Current Delivery Bulk; select price; add bulk product and quantity; Get Price; submit | Price matches Navision Pricing Engine setup; order is submitted and an order number is generated |
-| CDB-002 | Optional quote generation | Create a Current Delivery Bulk order; use Get Quote before submitting | Quote is generated and associated with the order; order can proceed through submission |
-| CDB-003 | Submit without quote generation | Create a Current Delivery Bulk order; Get Price and submit without using Get Quote | Order can be submitted without requiring a quote document |
-| CDB-004 | Validate order integration to Navision | Submit order; search order number in Navision Order Header Staging List | Order is received and staging/process status indicates successful processing; SFDC progresses to Planning |
-| CDB-005 | Validate price against effective date | Create otherwise equivalent orders using applicable effective dates; compare Get Price result with Navision PE setup | Returned price matches configured price for selected effective date |
-| CDB-006 | Plan order against an available vehicle | In correct WindDMS company/database, open relevant date and shift; confirm vehicle has no conflicting planned order; move order to truck and lock it | Order is assigned to selected vehicle; lock indicator changes; Trip ID is generated |
-| CDB-007 | Validate Trip ID synchronization | Refresh SFDC after WindDMS planning | SFDC displays generated Trip ID and planned state |
-| CDB-008 | Load bulk order in TMSLite | Open active location; find trip; enter loading date/time details; select actual vehicle; enter Standard and Ambient quantities as applicable; confirm loading | Loading is accepted for the correct trip and vehicle |
-| CDB-009 | Validate Loading Confirmation in Navision | Search Trip ID in Loading Header Staging List after TMSLite loading | LC record is present and successfully processed |
-| CDB-010 | Validate delivery confirmation | Complete configured delivery process in WindDMS; inspect Navision staging by Trip ID | DC record is received and successfully processed; trip progresses through configured closure |
-| CDB-011 | Validate final sales invoice | Complete normal sales order lifecycle; search order number or Trip ID in Posted Sales Invoices; open PDF | Posted invoice is available and linked to expected order/trip |
-| CDB-012 | Validate invoice quantity basis — Standard | Set customer Invoice Based On to Standard; load different Standard and Ambient quantities; complete invoicing | Invoice PDF reflects Standard quantity according to customer setup |
-| CDB-013 | Validate invoice quantity basis — Ambient | Set customer Invoice Based On to Ambient; load different Standard and Ambient quantities; complete invoicing | Invoice PDF reflects Ambient quantity according to customer setup |
-| CDB-014 | Validate prepayment customer path | Create Current Delivery Bulk for prepayment customer; satisfy payment requirement; continue through planning, loading, delivery and invoice | Payment gate is handled; eligible order follows normal downstream lifecycle; prepayment-specific information appears where applicable |
-| CDB-015 | Validate credit customer path | Create Current Delivery Bulk for credit customer; complete required credit approval if applicable; continue downstream | Credit gate is satisfied; eligible order follows same downstream lifecycle and invoice path |
+## Customer setup prerequisite — Invoice Based On
 
-## B. Current Delivery Package — normal sales customer
+For a normal sales customer, verify the customer's **Invoice Based On** configuration before creating the Current Delivery Bulk order. This customer-level setup determines the quantity printed on the sales invoice. It is not a universal quantity rule for every order type.
 
-| ID | Scenario | Key steps | Expected result |
-|---|---|---|---|
-| CDP-001 | Create and submit a Current Delivery Package order | In SFDC, create Current Delivery Package for normal sales customer; add package product and quantity; submit | Order is created and submitted successfully |
-| CDP-002 | Validate order integration and acceptance | Search order number in Navision Order Header Staging List; refresh SFDC | Staging record is successfully processed; SFDC order status is Accepted |
-| CDP-003 | Validate first Navision posting stage | Search order in Navision Sales Orders and perform first configured post action | First posting stage completes; SFDC reflects intermediate Loaded status |
-| CDP-004 | Validate final Navision posting stage | Find order again and perform second configured post action | Navision shows Delivered; order is removed from active Sales Orders; SFDC updates to Invoiced |
-| CDP-005 | Validate posted package invoice | Search order number in Posted Sales Invoices and open invoice PDF | Posted invoice is available and order/product/quantity details are correct |
-| CDP-006 | Validate package order does not enter bulk logistics path | Follow Current Delivery Package normal sales order and inspect WindDMS/TMSLite | Package flow completes through Navision posting without bulk vehicle planning or TMSLite truck loading |
+| Customer's Invoice Based On setup | Expected invoice PDF quantity |
+|---|---|
+| Order Quantity | Ordered quantity |
+| Loaded Quantity — Standard customer | Standard loaded quantity |
+| Loaded Quantity — Ambient customer | Ambient loaded quantity |
+| Delivered Quantity | Delivered quantity |
 
-## C. Transfer customer orders
+**Example test data**
 
-| ID | Scenario | Key steps | Expected result |
-|---|---|---|---|
-| TRF-001 | Current Delivery Bulk for transfer customer | Create Current Delivery Bulk for transfer customer; add product and quantity; submit; complete WindDMS planning, TMSLite loading and delivery | Order reaches Delivered; LC/DC and trip processing are reflected; no normal sales invoice is expected |
-| TRF-002 | Validate bulk transfer inventory movement | Inspect source and destination SKU/inventory after completion | Quantity decreases at source and increases at destination |
-| TRF-003 | Current Delivery Package for transfer customer | Create Current Delivery Package for transfer customer; submit; find order in Navision Transfer Orders | Transfer package order is available in Transfer Orders, not Sales Orders |
-| TRF-004 | Post transfer shipment and delivery | Post shipment and delivery together or in separate actions, as supported | Shipment and delivery posting complete successfully |
-| TRF-005 | Verify posted transfer receipt | Search order in Posted Transfer Receipts | Completed transfer record is available; active Transfer Orders entry is removed |
-| TRF-006 | Validate package transfer inventory movement | Check SKU/inventory at source and destination | Source quantity is reduced and destination quantity is increased; no sales invoice is expected |
+- Ordered quantity: 1,000
+- Standard loaded quantity: 999
+- Ambient loaded quantity: 998
+- Delivered quantity: 997
 
-## D. Normal customer using a consignment location — Current Delivery Bulk
+Expected invoice PDF quantity for each configuration:
 
-| ID | Scenario | Key steps | Expected result |
-|---|---|---|---|
-| CON-001 | Compare supply and consignment locations | Use same normal customer with configured supply and consignment locations; create comparable Current Delivery Bulk orders | Supply location follows normal sales/invoice path; consignment location follows transfer-style processing |
-| CON-002 | Complete consignment-location bulk order | Create Current Delivery Bulk for normal customer using consignment location; process through Navision, WindDMS, TMSLite and delivery | Order reaches Delivered; logistics confirmations and trip processing are received |
-| CON-003 | Verify consignment transfer record | Inspect active Transfer Orders where applicable; after successful trip closure, inspect Posted Transfer Receipts | Active transfer record is cleared on completion and posted transfer receipt is available |
-| CON-004 | Verify no sales invoice for consignment-location order | Search Posted Sales Invoices using order number/Trip ID | No normal sales invoice PDF is expected for this consignment-location transfer scenario |
+- Order Quantity → 1,000
+- Loaded Quantity for a Standard customer → 999
+- Loaded Quantity for an Ambient customer → 998
+- Delivered Quantity → 997
 
-## E. Integration and template-related test scenarios
+Run the applicable invoice-basis variation by configuring the customer setup, processing the normal sales Current Delivery Bulk order, and checking the quantity on the posted invoice PDF. This validation is not included for consignment or transfer orders.
 
-| ID | Scenario | Key steps | Expected result |
-|---|---|---|---|
-| INT-001 | Trace an order using Message ID | Submit an order; capture its Message ID from the authorized integration monitoring/logging view; correlate it with the transaction and processing status | Message ID identifies the relevant integration message and helps trace its processing path |
-| INT-002 | Investigate a message that does not reach Navision | Confirm order is absent from Order Header Staging List; use Message ID to trace the message through iPaaS / Middleware | Investigation identifies the last successful processing point or failure details; findings are documented without exposing sensitive payloads |
-| INT-003 | Support a SmartComm template correction | For a template-related issue, capture the relevant Message ID and share the associated payload with SmartComm through the approved internal channel | SmartComm receives the trace reference and payload needed to investigate template modification/correction |
-| INT-004 | Validate corrected template output | After the approved template correction is deployed to the test environment, execute the relevant transaction and inspect generated output | Output reflects the agreed template correction; evidence is recorded in the authorized test record |
+## A. Normal sales customer — Current Delivery Bulk
 
-## F. Shared regression checks
+**Preconditions**
+- Normal sales customer is configured for the applicable prepayment or credit process.
+- Customer's Invoice Based On setup is known and recorded when invoice quantity is in scope.
+- Selected product is configured for the selected location and has available inventory.
+- Required location, pricing, WindDMS vehicle/shift and TMSLite location setup is available.
+- Required integrations are available.
 
-| ID | Scenario | Key steps | Expected result |
-|---|---|---|---|
-| REG-001 | Verify order-type routing | Execute one normal Current Delivery Bulk and one normal Current Delivery Package order | Bulk follows logistics planning/loading/delivery; package follows Navision posting path |
-| REG-002 | Verify customer-type routing | Compare normal sales customer and transfer customer orders using supported order types | Normal sales customer produces sales invoice where configured; transfer customer completes as transfer without sales invoice |
-| REG-003 | Verify document destination | Search Posted Sales Invoices for sales orders and Posted Transfer Receipts for transfer/consignment flows | Each completed transaction is found in the correct posted-document area |
-| REG-004 | Verify inventory impact | Compare source/destination SKU balances before and after a completed transfer | Inventory movement matches the transferred quantity |
+**Execution steps**
+1. Launch Salesforce and log in.
+2. Search for and open the normal prepayment or credit customer.
+3. Select **Create Order**.
+4. Select **Current Delivery Bulk** and the applicable location/product context using the available order fields.
+5. Select **Next**.
+6. Select the current/latest applicable date.
+7. Select **Add Product** and choose an available product for the selected location.
+8. Enter the order quantity and select **Get Price**.
+9. Verify that the price is fetched, then select **Create** and **Submit**.
+10. Verify successful submission, the **Submitted** status and generation of an order number. Record the order number.
+11. Launch Navision and open **Order Header Staging List** from Global Search.
+12. Search using the order number and verify that the order is received with **Processed** status.
+13. Refresh the Salesforce order and verify that its status progresses to **Planning**.
+14. Launch WindDMS and select the correct database/company profile for the test environment.
+15. Open the applicable date and shift. Search for the intended vehicle and verify that it is available and has no conflicting planned order for that shift.
+16. Search for the order number. Right-click the order, select **Move on Truck**, enter the vehicle number and confirm.
+17. Lock the truck. Verify the lock state and generated **Trip ID**.
+18. Refresh Salesforce and verify that the Trip ID is displayed and the order status changes from **Planning** to **Planned**.
+19. Launch TMSLite and open the applicable active company location.
+20. Search for the Trip ID and open the trip.
+21. Enter the loading start and end date/time details.
+22. Select the actual vehicle and enter Standard and Ambient loaded quantities, as applicable.
+23. Confirm the loading details and finish loading.
+24. In Navision, open **Loading Header Staging List**.
+25. Filter/search by Shipment ID using the Trip ID and verify that the **LC (Loading Confirmation)** is received with **Processed** status.
+26. Return to WindDMS, open the applicable date and shift, search for the Trip ID and complete the delivery/dispatch action.
+27. In Navision, verify that the **DC (Delivery Confirmation)** is received successfully for the Trip ID.
+28. Refresh/check the relevant trip processing record and verify that the trip has completed its configured processing.
+29. In Navision, search Sales Orders using the order number or Trip ID and verify that the completed order is no longer in the active Sales Orders list.
+30. Open **Posted Sales Invoices**, search using the order number or Trip ID, and open the invoice PDF.
+31. Verify invoice details and validate the invoice quantity against the customer's **Invoice Based On** setup, where applicable.
+32. Refresh Salesforce and verify **Invoiced** status and that the invoice document is available on the order page.
 
-## Scope notes
-- Exact Xtract / with-ship-to / without-ship-to / scheduling order names and behavioural differences are pending confirmation. Do not document them as confirmed until verified.
-- Exact names of other regression order variants are pending confirmation.
-- Confirm the exact labels for the two Navision posting actions and delivery confirmation steps in the target environment.
-- All cases remain **Not Run** until genuinely executed. Populate Actual Result, Status and Evidence only after execution.
+**Expected result**
+- The order is accepted by the connected applications and progresses through planning, loading, delivery and invoicing.
+- LC and DC are successfully processed.
+- The completed order is no longer in the active Sales Orders list.
+- The posted invoice is available, and its quantity follows the customer's Invoice Based On configuration.
+
+### Prepayment and credit customer variations
+
+The downstream Current Delivery Bulk workflow above is common once the applicable payment/credit requirement is satisfied.
+
+- **Prepayment customer:** Complete the applicable prepayment requirement before the order proceeds, as required by the configured process.
+- **Credit customer:** Complete the applicable credit approval requirement, where required, before the order proceeds.
+
+Do not assume that prepayment and credit customers have identical release conditions. Record the actual customer setup and observed gate during execution.
+
+## B. Normal sales customer — Current Delivery Package
+
+**Preconditions**
+- Normal sales customer and applicable prepayment/credit setup are available.
+- Package product and required Navision setup are available.
+
+**Execution steps**
+1. Launch Salesforce and log in.
+2. Open the normal sales customer and select **Create Order**.
+3. Select **Current Delivery Package**, complete the applicable order fields and select **Next**.
+4. Select the current/latest applicable date.
+5. Add the package product, enter quantity, select **Get Price**, and verify the fetched price.
+6. Select **Create** and **Submit**. Record the generated order number.
+7. In Navision, open **Order Header Staging List**, search the order number and verify successful processing.
+8. Refresh Salesforce and verify the order status is **Accepted**.
+9. In Navision, open **Sales Orders**, search for the order number and perform the first **Post** action.
+10. Refresh Salesforce and verify the intermediate **Loaded** status.
+11. In Navision, find the order again and perform the second **Post** action.
+12. Verify that Navision shows **Delivered** and the order is no longer in the active Sales Orders list.
+13. Refresh Salesforce and verify **Invoiced** status.
+14. In Navision, open **Posted Sales Invoices**, search for the order number and open the invoice PDF.
+15. Verify the invoice details.
+
+**Expected result**
+- The package order follows the Navision posting flow described above.
+- Salesforce reflects the observed Accepted, Loaded and Invoiced statuses at the corresponding stages.
+- The posted invoice is available for verification.
+- This package workflow does not include the WindDMS/TMSLite bulk logistics steps.
+
+## C. Normal customer using a consignment location — Current Delivery Bulk
+
+**Preconditions**
+- The normal customer has the applicable supply location and a configured consignment location.
+- Product/SKU and inventory are available for the consignment location.
+- Required WindDMS and TMSLite setup is available.
+
+**Execution steps**
+1. Launch Salesforce and log in.
+2. Open the normal customer and select **Create Order**.
+3. Select **Current Delivery Bulk** and choose the customer's **consignment location** instead of the supply location.
+4. Continue with the applicable date, product selection, quantity, **Get Price**, **Create** and **Submit** steps.
+5. Record the generated order number.
+6. In Navision **Order Header Staging List**, search the order number and verify successful processing.
+7. Continue the bulk logistics lifecycle: plan the order in WindDMS, lock the truck and generate the Trip ID.
+8. Verify the Trip ID and planned status in Salesforce.
+9. In TMSLite, open the trip, enter loading details and complete loading.
+10. In Navision **Loading Header Staging List**, verify the LC is received and processed for the Trip ID.
+11. Complete delivery in WindDMS.
+12. In Navision, verify DC and the relevant trip processing are received successfully.
+13. Verify the order reaches **Delivered**.
+14. Check the applicable transfer records and source/destination inventory movement.
+15. Search **Posted Sales Invoices** using the order number or Trip ID and verify that no normal sales invoice PDF is generated for this consignment-location transfer scenario.
+
+**Expected result**
+- The consignment-location order follows the bulk logistics and location-transfer process.
+- The order reaches Delivered and the transfer/inventory movement is reflected.
+- It is not processed as a normal invoiced sales order.
+
+## D. Transfer customer — Current Delivery Bulk only
+
+**Preconditions**
+- A transfer customer and its configured supplier location are available.
+- Product/SKU and inventory are available for the relevant locations.
+- Required WindDMS and TMSLite setup is available.
+
+**Execution steps**
+1. Launch Salesforce and log in.
+2. Open the transfer customer and select **Create Order**.
+3. Select **Current Delivery Bulk** and the configured supplier location.
+4. Continue with the applicable date, product selection, quantity, **Get Price**, **Create** and **Submit** steps.
+5. Record the generated order number.
+6. In Navision **Order Header Staging List**, search the order number and verify successful processing.
+7. Plan the order in WindDMS, assign an available vehicle, lock the truck and record the generated Trip ID.
+8. Refresh Salesforce and verify the Trip ID and planned status.
+9. In TMSLite, search the Trip ID, enter loading details and complete loading.
+10. In Navision **Loading Header Staging List**, verify the LC is received and processed.
+11. Complete delivery in WindDMS.
+12. In Navision, verify the DC and relevant trip processing are received successfully.
+13. Verify that the order reaches **Delivered**.
+14. Verify transfer completion and the source/destination SKU inventory movement.
+15. Search Posted Sales Invoices using the order number or Trip ID and verify that no normal sales invoice PDF is expected.
+
+**Expected result**
+- The transfer customer's Current Delivery Bulk order completes the logistics and transfer process.
+- The order reaches Delivered and inventory movement is reflected at the relevant locations.
+- No normal sales invoice PDF is generated.
+
+## Execution record
+
+For each test case, record:
+- Test Case ID and execution date
+- Customer type and relevant customer setup
+- Order number and Trip ID, where applicable (use anonymized sample identifiers in this public portfolio)
+- Actual result
+- Status: **Not Run / Pass / Fail / Blocked**
+- Sanitized evidence or defect reference
+
+Never publish real customer details, order numbers, Trip IDs, Message IDs, payloads, screenshots, environment URLs, credentials or employer-owned documents.
