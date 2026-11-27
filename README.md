@@ -1,11 +1,10 @@
 # End-to-End ERP Quality Assurance Portfolio
 
-A practical portfolio documenting real-world manual QA experience across connected ERP, CRM, logistics, inventory, pricing, order-management and procurement workflows.
+A practical portfolio documenting manual QA experience across connected ERP, CRM, logistics, inventory, pricing, order-management and procurement workflows.
 
-The examples are based on professional experience and are anonymized. No employer-owned documents, client information, production identifiers, screenshots, credentials, environment URLs or proprietary test assets are included.
+The examples are anonymized. No employer-owned documents, client information, production identifiers, screenshots, credentials, environment URLs or proprietary test assets are included.
 
 ## QA coverage
-
 - Requirements understanding and scenario design
 - Environment readiness and application-wise master-data preparation
 - Functional, integration, negative, regression, smoke, sanity and UAT testing
@@ -16,18 +15,16 @@ The examples are based on professional experience and are anonymized. No employe
 
 ## Application landscape
 
-| Application | Business purpose represented |
+| Application / Component | Business purpose represented |
 |---|---|
 | Salesforce (SFDC) | Customer records, blanket contracts and sales-order initiation |
 | Microsoft Dynamics NAV / Navision | Product/location master data, SKU, inventory, pricing, purchase contracts, procurement and staging validation |
 | WindDMS | Vehicle/haulier data, order planning, compartment allocation and delivery scheduling |
 | TMSLite | Trip acknowledgement, loading workflow and Bill of Lading-related outputs |
-| Middleware (e.g. IPAS / BizTalk) | Message/payload investigation when transactions do not reach downstream systems |
-
-Actual integration paths and enabled features may vary by environment and configuration.
+| iPaaS / Middleware | Integration-message and payload tracing between connected applications |
+| SmartComm | Template-related investigation and correction support using the relevant message ID and payload |
 
 ## Portfolio map
-
 1. [Environment readiness](01-environment-readiness/README.md)
 2. [Application master data and synchronization](02-application-master-data/README.md)
 3. [Inventory and pricing](03-inventory-and-pricing/README.md)
@@ -40,7 +37,6 @@ Actual integration paths and enabled features may vary by environment and config
 10. [Requirement traceability](10-requirement-traceability/README.md)
 
 ## Key business rules represented
-
 - Prepayment and credit customers follow different payment/credit-control paths.
 - Bulk products require logistics processing where configured; package products are excluded from logistics where the business rule specifies.
 - Location and product synchronization must be validated in each required destination.
@@ -48,9 +44,9 @@ Actual integration paths and enabled features may vary by environment and config
 - Purchase contracts in Navision and blanket contracts in Salesforce are distinct business concepts.
 - Consignment orders follow a location-transfer process and are not treated as standard invoiced sales orders.
 - Normal sales orders may involve planning, loading, delivery confirmation and invoice processing.
+- Integration investigation uses the relevant Message ID and processing/payload details; template-related issues may require coordination with SmartComm.
 
 ## Test-case format
-
 | Field | Purpose |
 |---|---|
 | Test Case ID | Unique reference |
@@ -64,10 +60,9 @@ Actual integration paths and enabled features may vary by environment and config
 | Status | Not Run / Pass / Fail / Blocked |
 | Evidence / Defect ID | Sanitized evidence or sample defect reference |
 
-**Execution integrity:** Test cases will be marked *Not Run*, *Illustrative* or *Simulated* unless genuinely executed in an authorized environment. Simulated results will never be represented as actual project execution.
+**Execution integrity:** Test cases are marked *Not Run*, *Illustrative* or *Simulated* unless genuinely executed in an authorized environment. Simulated results are never represented as actual project execution.
 
 ## About
-
 **Quality Assurance Engineer | Manual Testing | 7 Years of Experience**
 
 Experience areas include manual and functional testing, ERP and enterprise applications, end-to-end and integration testing, inventory and order management, procurement, regression, smoke, sanity, UAT, defect lifecycle and Azure DevOps / TFS.
