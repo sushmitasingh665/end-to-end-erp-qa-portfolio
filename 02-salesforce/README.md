@@ -1,47 +1,102 @@
-# Salesforce — Customer Master Setup
+# Salesforce — Environment and Customer Data Setup
 
-This page records the customer data needed before creating sales or transfer orders.
+This page covers the Salesforce checks and data preparation required before sales-order testing.
 
-## Customer records to prepare
+## 1. Verify Salesforce environment access
 
-Create separate customer records for the customer setup variations being tested. The following names are illustrative only.
+The team may use different Salesforce environments for different releases or testing activities (for example, Hotfix or LC Release).
 
-| Sample customer | Customer purpose | Billing method | Invoice Based On |
-|---|---|---|---|
-| QA-CUST-STD-ORDER | Normal sales customer | Standard | Order Quantity |
-| QA-CUST-STD-LOADED | Normal sales customer | Standard | Loaded Quantity |
-| QA-CUST-STD-DELIVERED | Normal sales customer | Standard | Delivered Quantity |
-| QA-CUST-MVN | Normal sales customer | MVN | Order Quantity |
-| QA-CUST-TRANSFER | Transfer customer | As configured for transfer customer | Not applicable to sales invoice validation |
+1. Confirm the required environment name/type from the development team's testing details.
+2. Open the corresponding Salesforce sandbox URL.
+3. Verify that the supplied login credentials are mapped to that environment.
+4. Log in and confirm that the user has access to the specific sandbox required for testing.
+5. Confirm that the environment is the correct one before creating or updating test data.
 
-For Loaded Quantity, use the applicable customer/product loading category:
-- Standard customer/product → validate Standard loaded quantity.
-- Ambient customer/product → validate Ambient loaded quantity.
+**Expected result:** The correct Salesforce sandbox opens successfully and the tester can access the required environment.
 
-Confirm the actual customer setup fields and allowed values in the target Salesforce environment. Do not assume that every field label matches this document.
+## 2. Create normal sales customers
 
-## Customer creation — execution outline
+Create separate normal sales customers for the billing-basis and invoice-quantity combinations needed for order testing.
 
-1. Launch Salesforce and open the customer creation area.
-2. Select the appropriate customer setup/type for a normal sales customer or transfer customer.
+### Customer creation
+
+1. Open the customer creation area in Salesforce.
+2. Select the company for which the customer is being created.
 3. Enter the customer ID and customer name.
-4. Select the correct company.
-5. Enter the customer's verified business/address details in the relevant address fields, including billing address details as required.
-6. Complete the required customer and company details.
-7. Set the applicable billing method (Standard or MVN).
-8. Set **Invoice Based On** for normal sales customers: Order Quantity, Loaded Quantity or Delivered Quantity, as applicable.
-9. Select/associate the applicable product or customer category, such as Standard or Ambient, where required by the setup.
-10. Complete the remaining mandatory fields and save/create the customer.
-11. Verify the customer record is created and active.
-12. Reopen the customer and verify the company, address, billing method, Invoice Based On and other configured values.
+4. Complete the required company and customer details.
+5. Enter the relevant customer/business address details.
+6. Set **Billing Basis**:
+   - **Standard** for a Standard customer.
+   - **Ambient** for an Ambient customer.
+7. Set **Invoice Quantity Based On**:
+   - **Order Quantity**
+   - **Loaded Quantity**
+   - **Delivered Quantity**
+8. Complete the remaining mandatory fields and save/create the customer.
+9. Verify that the customer is created and active.
 
-## Setup variations to retain
+The **Invoice Quantity Based On** field can also be updated after customer activation. Reopen the active customer, update the field to the required dropdown value and save the change.
 
-- Keep separate normal customers for the invoice quantity options so the invoice PDF can be compared against each customer's setup.
-- Keep a separate Standard billing customer and MVN billing customer.
-- Keep a separate transfer customer for transfer-order execution.
-- Where a combination of billing method and Invoice Based On is required, configure and record that exact combination in the test environment before execution.
+### Customer data to keep ready for order testing
 
-## Verification
+Prepare at least these five normal sales customer configurations:
 
-The customer must be active and selectable when creating the intended order. Record the configured customer type, billing method and Invoice Based On value as test prerequisites.
+| Sample customer | Billing Basis | Invoice Quantity Based On |
+|---|---|---|
+| QA-CUST-AMB-LOAD | Ambient | Loaded Quantity |
+| QA-CUST-AMB-DEL | Ambient | Delivered Quantity |
+| QA-CUST-STD-LOAD | Standard | Loaded Quantity |
+| QA-CUST-STD-DEL | Standard | Delivered Quantity |
+| QA-CUST-ORDER-QTY | Standard or Ambient | Order Quantity |
+
+The names above are illustrative only. Use unique, available IDs and names in the authorized test environment.
+
+### Impact on invoice PDF
+
+The customer's **Billing Basis** and **Invoice Quantity Based On** settings determine which loading/delivery quantity is reflected on the generated invoice PDF.
+
+- **Loaded Quantity:** During TMSLite loading, Standard and Ambient loaded quantities are entered separately. For a Standard customer, the invoice quantity should reflect the Standard loaded quantity. For an Ambient customer, it should reflect the Ambient loaded quantity.
+- **Delivered Quantity:** During delivery/dispatch in WindDMS, Standard and Ambient delivered quantities are entered separately. The invoice quantity should reflect the delivered quantity corresponding to the customer's Billing Basis.
+- **Order Quantity:** The invoice quantity should reflect the quantity originally ordered.
+
+Use different values for ordered, loaded and delivered quantities when executing these checks so that the invoice PDF demonstrates which configured quantity was used.
+
+## 3. Create a transfer customer
+
+Create a separate customer with the required transfer-customer setup for transfer-order testing.
+
+1. Open the customer creation area.
+2. Select the appropriate company and transfer-customer setup/type.
+3. Enter the customer ID, name, company details and required address details.
+4. Complete the mandatory fields and save.
+5. Verify that the transfer customer is active and available for order creation.
+
+## 4. Create a blanket order / blanket purchase contract
+
+A blanket contract is created against the customer and remains in **Accepted** state after successful submission/release.
+
+1. Open the **Create Blanket Purchase Contract** area.
+2. Select the customer and complete the required contract details.
+3. Select the order type: **Current Delivery Bulk** or **Current Delivery Package**.
+4. Select the applicable location.
+5. Enter the contract start date and end date.
+6. Add the product(s) and the applicable quantity/allocation details.
+7. Submit the blanket contract.
+8. Verify that it is successfully released and remains in **Accepted** state.
+
+### Use a blanket contract while creating a sales order
+
+1. Select **Create Order** for the customer.
+2. Select the order type and date.
+3. Select the blanket-order checkbox.
+4. Verify that the available blanket-contract dropdown is populated based on the selected date and active contract period.
+5. Select the required blanket contract.
+6. Verify that the product list is restricted to products included in that selected blanket contract.
+7. If the blanket contract selection is changed, verify that the previously displayed product selection is cleared and the product list refreshes for the newly selected contract.
+8. Select a product from the refreshed list and continue with order creation.
+
+**Expected result:** Only a blanket contract active for the selected date can be selected, and only products associated with the selected contract are available for the order.
+
+## 5. Illustrative data and disclosure
+
+Names such as `QA-CUST-AMB-LOAD` are examples for documentation only. They are not claims that these records were created in a company environment. Use approved/sanitized data in the public portfolio; do not publish real customer personal details, credentials, sandbox URLs or confidential company information.
