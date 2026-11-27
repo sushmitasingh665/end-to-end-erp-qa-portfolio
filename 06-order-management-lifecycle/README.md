@@ -7,7 +7,7 @@ This document contains the end-to-end order workflows in one place.
 Complete the application setup before execution:
 
 - Salesforce: active normal customer or transfer customer with the required customer settings.
-- Navision: location, product, SKU, available inventory and pricing are configured.
+- Navision: location, product, SKU, available inventory and pricing are configured. If the scenario uses a purchase contract or blanket contract, its vendor/customer, location, dates, product and allocated inventory/pricing must also be ready.
 - WindDMS: synchronized transporter vendor is available as a haulier; vehicle and compartments are configured.
 - TMSLite: required company location is added to the user's profile.
 - Use a product that is configured for the selected location and has available stock.
