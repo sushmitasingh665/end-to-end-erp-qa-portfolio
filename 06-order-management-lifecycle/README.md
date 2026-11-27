@@ -27,11 +27,12 @@ Complete the application setup before execution:
 7. Select the required location.
 8. The order line contains the columns **Item Number**, **Quantity** and **Unit Price**. Select **Add Product** to display the entry fields.
 9. Select the required bulk item in **Item Number**.
-10. Enter the order quantity.
-11. Select **Get Price** and verify that the unit price is fetched.
-12. Select **Generate Quote**.
-13. Submit the order.
-14. Refresh the order and verify **Submitted** status. Record the order number.
+10. If the scenario uses a purchase contract, select the applicable contract in the **Purchase Contract** field at that product-line level. Verify that the selected contract is valid for the product/location and has allocated inventory.
+11. Enter the order quantity.
+12. Select **Get Price** and verify that the unit price is fetched.
+13. Select **Generate Quote**.
+14. Submit the order.
+15. Refresh the order and verify **Submitted** status. Record the order number.
 
 ### Navision — order staging
 
