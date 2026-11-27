@@ -1,18 +1,19 @@
 # Defects
 
-This folder will contain real defects that have been provided and confirmed from the user's testing experience.
+This folder is for real defects shared from actual testing work. No sample defects are created in advance.
 
-## Defect record format
-- Defect ID / approved reference
+## Defect record
+
+- Defect ID / approved reference (publish only if disclosure is permitted)
 - Caption / summary
 - Application and affected area
-- Preconditions / test data (sanitized)
+- Preconditions and sanitized test data
 - Steps to reproduce
 - Actual result
 - Expected result
-- Investigation performed
+- Investigation and troubleshooting performed
 - Evidence (sanitized)
-- Resolution and retest outcome, when confirmed
-- Related test case references
+- Resolution and retest outcome, if confirmed
+- Related test case reference(s)
 
-No sample defects or invented IDs will be added. Include internal references publicly only when they are confirmed as safe and non-confidential to disclose.
+Use anonymized references if internal TFS/defect identifiers are not approved for public disclosure.
