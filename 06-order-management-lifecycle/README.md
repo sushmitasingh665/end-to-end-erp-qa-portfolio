@@ -21,68 +21,69 @@ Complete the application setup before execution:
 1. Launch Salesforce and log in.
 2. Search for and open the active normal sales customer.
 3. Select **Create Order**.
-4. Select **Current Delivery Bulk** in the applicable order type field.
-5. Complete the required order information and select the applicable location/context.
-6. Select **Next**.
-7. Select the current/latest applicable date.
-8. Select **Add Product**.
-9. Select the bulk product configured for the chosen location and with available inventory (for example, Diesel — Bulk).
+4. Select **Current Delivery Bulk** as the order type.
+5. Complete the required order information.
+6. Select the applicable date.
+7. Select the required location.
+8. The order line contains the columns **Item Number**, **Quantity** and **Unit Price**. Select **Add Product** to display the entry fields.
+9. Select the required bulk item in **Item Number**.
 10. Enter the order quantity.
-11. Select **Get Price** and verify that the price is fetched.
-12. Complete the quantity/order details required on the screen and continue using the available action.
-13. Select **Create**, then **Submit**.
-14. Verify successful submission, the **Submitted** status and generated order number. Record the order number.
+11. Select **Get Price** and verify that the unit price is fetched.
+12. Select **Generate Quote**.
+13. Submit the order.
+14. Refresh the order and verify **Submitted** status. Record the order number.
 
-### Navision — order staging and release
+### Navision — order staging
 
-15. Launch Navision.
-16. Open **Order Header Staging List** using Global Search.
-17. Search by the Salesforce order number.
-18. Verify that the order has been received and shows **Processed**.
-19. Refresh the Salesforce order and verify that it progresses to **Planning**.
+15. Launch Navision and open **Order Header Staging List** using Global Search.
+16. Search by the Salesforce order number.
+17. Verify that the order is received with **Processed** status.
+18. Refresh Salesforce and verify that the order status progresses to **Planning**.
 
-### WindDMS — plan order and assign vehicle
+### WindDMS — plan order
 
-20. Launch WindDMS and select the correct database/company profile.
-21. Open the applicable date and shift.
-22. Search for the intended vehicle and verify that it is available and has no conflicting order planned for that shift.
-23. Search for the order number.
-24. Right-click the order and select **Move on Truck**.
-25. Enter the vehicle number and confirm.
-26. Lock the truck.
-27. Verify the locked state and generated **Trip ID**.
-28. Refresh Salesforce and verify that the Trip ID is displayed and the status changes from **Planning** to **Planned**.
+19. Launch WindDMS and select the correct database/company profile.
+20. Open the applicable date and shift.
+21. Search for the intended vehicle and verify that it is available.
+22. Search for the order number.
+23. Right-click the order and select **Move on Truck**.
+24. Enter the vehicle number and confirm.
+25. Lock the truck and verify the generated **Trip ID**.
+26. Refresh Salesforce and verify that the order status is **Planned**.
 
-### TMSLite — enter loading details
+### TMSLite — loading
 
-29. Launch TMSLite and open the active company location available in the user profile.
-30. Search for the Trip ID and open the trip.
-31. Enter loading start and end date/time details.
-32. Select the actual vehicle.
-33. Enter the applicable Standard and Ambient loaded quantities.
-34. Confirm the loading details and finish loading.
+27. Launch TMSLite and open the active company location available in the user profile.
+28. Search for the Trip ID and open the trip.
+29. Enter loading start and end date/time details.
+30. Select the vehicle.
+31. Enter the applicable Standard and Ambient loaded quantities.
+32. Confirm the loading details and finish loading.
+33. Refresh Salesforce and verify that the order status is **Loaded**.
 
-### Navision — verify Loading Confirmation
+### Navision — loading confirmation
 
-35. Launch Navision and open **Loading Header Staging List**.
-36. Filter/search by Shipment ID using the Trip ID.
-37. Verify that the **LC (Loading Confirmation)** is received successfully with **Processed** status.
+34. Open **Loading Header Staging List** in Navision.
+35. Search/filter using the Trip ID or Shipment ID.
+36. Verify that **LC (Loading Confirmation)** is received successfully.
 
-### WindDMS and Navision — delivery and completion
+### WindDMS — delivery and Navision confirmations
 
-38. Return to WindDMS and open the applicable date and shift.
-39. Search for the Trip ID and complete the delivery/dispatch action.
-40. In Navision, verify that the **DC (Delivery Confirmation)** is received successfully for the Trip ID.
-41. Refresh/check the relevant trip processing record and verify that the configured trip processing has completed.
-42. Search Sales Orders in Navision using the order number or Trip ID.
-43. Verify that the completed order is no longer in the active Sales Orders list.
-44. Open **Posted Sales Invoices** and search by order number or Trip ID.
-45. Open the invoice PDF and verify the invoice details and quantity.
-46. Refresh Salesforce and verify **Invoiced** status and invoice document availability on the order.
+37. Return to WindDMS and open the applicable date and shift.
+38. Search for the Trip ID and complete the delivery/dispatch action. Enter the applicable Standard and Ambient delivered quantities.
+39. In Navision, open **Loading Header Staging List** and verify that **DC** and **TC** are received for the Trip ID.
+40. Refresh Salesforce after the DC is successfully processed and verify that the order status progresses from **Delivered** to **Invoiced**.
+
+### Navision — posted sales invoice
+
+41. Open **Posted Sales Invoices** in Navision.
+42. Search using the order number or Trip ID.
+43. Open the invoice PDF and verify the invoice details and quantity.
+44. Verify that the invoice PDF quantity matches the customer's **Invoice Quantity Based On** and **Billing Basis** setup.
 
 ### Invoice quantity — customer setup validation
 
-For normal sales Current Delivery Bulk, the customer's **Invoice Based On** setup determines the invoice PDF quantity.
+For normal sales Current Delivery Bulk, the customer's **Invoice Quantity Based On** setup determines the invoice PDF quantity.
 
 | Invoice Based On | Invoice PDF quantity |
 |---|---|
@@ -105,7 +106,7 @@ Expected invoice PDF quantity:
 
 Run the applicable customer setup variation and verify the invoice PDF against that customer's configured value. This quantity validation is for normal sales Current Delivery Bulk only.
 
-**Expected outcome:** The order is submitted, staged, planned, loaded and delivered; LC and DC are processed; the sales order is invoiced; and the invoice PDF reflects the customer's Invoice Based On configuration.
+**Expected outcome:** The Salesforce order progresses through **Submitted → Planning → Planned → Loaded → Delivered → Invoiced**. LC, DC and TC confirmations are received in Navision as described, and the posted invoice PDF reflects the customer's Billing Basis and Invoice Quantity Based On configuration.
 
 ## B. Sales order — Current Delivery Package
 
