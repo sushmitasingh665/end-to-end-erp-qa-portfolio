@@ -143,8 +143,8 @@ Run the applicable customer setup variation and verify the invoice PDF against t
 4. Select **Current Delivery Bulk** and complete the required order information using the configured supplier/location context.
 5. Select **Next** and choose the current/latest applicable date.
 6. Select **Add Product** and choose the bulk product configured for the selected location with available inventory.
-7. Enter quantity and select **Get Price** where required by the order screen.
-8. Complete the required order details, select **Create** and **Submit**.
+7. Enter the required quantity and product details. **No Get Price button or price-fetch step is available for this transfer order**, because pricing is not configured for the transfer/consignment customer flow.
+8. Submit the order directly.
 9. Verify successful submission and record the generated order number.
 10. In Navision, open **Transfer Orders** and search for the order record. Verify that the transfer order is available for processing.
 11. Continue the confirmed bulk logistics flow: in WindDMS, select the applicable date/shift, assign the available vehicle, use the synchronized haulier and lock the truck. Record the Trip ID.
