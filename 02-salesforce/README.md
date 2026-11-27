@@ -75,14 +75,18 @@ Create a separate customer with the required transfer-customer setup for transfe
 
 A blanket contract is created against the customer and remains in **Accepted** state after successful submission/release.
 
-1. Open the **Create Blanket Purchase Contract** area.
-2. Select the customer and complete the required contract details.
+1. Open the required customer in Salesforce — the blanket order is created for that customer.
+2. Select the **Blanket Order** action/button.
 3. Select the order type: **Current Delivery Bulk** or **Current Delivery Package**.
 4. Select the applicable location.
-5. Enter the contract start date and end date.
-6. Add the product(s) and the applicable quantity/allocation details.
-7. Submit the blanket contract.
-8. Verify that it is successfully released and remains in **Accepted** state.
+5. Enter the contract start date and end date to define the active period.
+6. Add the required product(s).
+7. Provide the required inventory/allocation details; do not enter an order quantity in this blanket-order creation step.
+8. Select **Get Price** and verify that the blanket-order-specific price is fetched.
+9. Submit the blanket order.
+10. Verify successful release and that the blanket order remains in **Accepted** state.
+
+**Pricing check:** The Navision Pricing Engine has a separate price setup for a blanket order. For the same product and location, compare the price fetched for a normal order with the price fetched for an order using the blanket contract. Verify that the blanket-contract order receives its separately configured price.
 
 ### Use a blanket contract while creating a sales order
 
@@ -92,8 +96,9 @@ A blanket contract is created against the customer and remains in **Accepted** s
 4. Verify that the available blanket-contract dropdown is populated based on the selected date and active contract period.
 5. Select the required blanket contract.
 6. Verify that the product list is restricted to products included in that selected blanket contract.
-7. If the blanket contract selection is changed, verify that the previously displayed product selection is cleared and the product list refreshes for the newly selected contract.
-8. Select a product from the refreshed list and continue with order creation.
+7. Select a product and use **Get Price**. Verify that the price is fetched using the blanket-contract pricing setup, and differs from the normal-order price for the same location/product when the two setups contain different prices.
+8. If the blanket contract selection is changed, verify that the previously displayed product selection is cleared and the product list refreshes for the newly selected contract.
+9. Select a product from the refreshed list and continue with order creation.
 
 **Expected result:** Only a blanket contract active for the selected date can be selected, and only products associated with the selected contract are available for the order.
 
