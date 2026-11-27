@@ -1,6 +1,6 @@
 # WindDMS — Haulier and Vehicle Setup
 
-WindDMS uses the transporter vendor synchronized from Navision as the haulier reference. The vehicle is then created against that haulier.
+WindDMS uses the transporter vendor synchronized from Navision as the haulier reference. The vehicle is then created against that haulier in the same configured company/database profile. The selected haulier links the vehicle to the intended company.
 
 ## 1. Verify synchronized haulier
 
