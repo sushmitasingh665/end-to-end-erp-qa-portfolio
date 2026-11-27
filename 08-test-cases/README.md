@@ -1,10 +1,11 @@
 # Test Cases
 
-Test cases will be added when the related real scenario or defect details are provided.
+Test cases will be added alongside the actual scenarios and defects provided.
 
-## Test case record format
+## Test case record
+
 - Test Case ID / approved reference
-- Related Defect ID, where applicable
+- Related Defect ID, if applicable
 - Scenario / objective
 - Preconditions and sanitized test data
 - Execution steps
@@ -13,4 +14,4 @@ Test cases will be added when the related real scenario or defect details are pr
 - Status: Not Run / Pass / Fail / Blocked
 - Sanitized evidence
 
-Keep test cases traceable to the real scenario or defect. Do not invent test IDs, execution steps or results.
+For defect-related testing, document the exact test steps performed to reproduce and verify the defect. Do not invent test IDs, execution outcomes or evidence.
