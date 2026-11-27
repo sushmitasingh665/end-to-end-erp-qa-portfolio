@@ -74,7 +74,10 @@ Maintain the blanket-order price separately from the normal-order price where th
 
 Compare the Unit Price returned by **Get Price** in Salesforce for both cases.
 
-## 6. Create transporter vendor
+## 6. Create vendor for WindDMS Haulier
+
+In Navision, create the vendor with **Vendor Type = Transporter**. After synchronization, this vendor is displayed as a **Haulier** in WindDMS.
+
 
 1. Open the **Vendor** page in Navision.
 2. Select **New**.
@@ -86,7 +89,31 @@ Compare the Unit Price returned by **Get Price** in Salesforce for both cases.
 8. Search for the vendor number and verify the record and Transporter type.
 9. Run the applicable synchronization so the transporter vendor is available to WindDMS.
 
-## 7. Verify order records
+## 7. Create a purchase contract
+
+A purchase contract is created in Navision and can be selected at the individual product-line level during Salesforce sales-order creation.
+
+1. Use Global Search to open **Purchase Contract**.
+2. Select **New**.
+3. Verify that the purchase contract number is generated automatically by the number series; do not enter a manual number.
+4. Enter the purchase contract name.
+5. Select the vendor. The vendor must already exist in Navision with **Vendor Type = Third-Party Supplier**.
+6. Select the applicable location.
+7. Enter the contract **From** and **To** dates.
+8. Add the required item number/product.
+9. Enter the inventory/allocation quantity for that item.
+10. Save the purchase contract and verify its details.
+
+### Use purchase contract inventory on a sales order
+
+- During Salesforce order creation, the **Purchase Contract** field is available at the product-line level alongside the item details.
+- Select the applicable purchase contract for each product line.
+- Different product lines in one sales order can use different purchase contracts; one contract can also contain multiple products.
+- Verify that the order quantity is consumed against the inventory allocated to the selected purchase contract, rather than the ordinary SKU inventory.
+
+**Expected result:** The correct purchase contract is selectable for the product line, and its allocated inventory is used for the order.
+
+## 8. Verify order records
 
 - Normal customer sales orders are viewed in **Sales Orders** and, after invoicing, in **Posted Sales Invoices**.
 - Transfer customer records are viewed in **Transfer Orders** and, after completion, in **Posted Transfer Receipts**.
